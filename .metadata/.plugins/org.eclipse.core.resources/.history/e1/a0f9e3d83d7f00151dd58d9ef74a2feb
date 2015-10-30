@@ -1,0 +1,5 @@
+package com.mathewberry.companies.plugin.hooks;
+
+public class VaultHandler {
+
+}

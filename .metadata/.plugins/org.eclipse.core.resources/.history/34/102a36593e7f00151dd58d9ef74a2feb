@@ -1,0 +1,26 @@
+package com.mathewberry.companies.plugin.hooks;
+
+import org.bukkit.plugin.RegisteredServiceProvider;
+
+import com.mathewberry.companies.CompaniesCore;
+
+import net.milkbowl.vault.economy.Economy;
+
+public class VaultHandler {
+	
+	private Economy economy = null;
+	
+	public VaultHandler()
+	{
+		setupEconomy();
+	}
+	
+	private boolean setupEconomy()
+	{
+		RegisteredServiceProvider<Economy> economyProvider = CompaniesCore.getInstance().getServer().getServicesManager().getRegistration(Econmy.class);
+		if(economyProvider != null) {
+			this.economy = ((Economy)economyProvider.getProvider());
+		}
+		retur this.economy != null;
+	}
+}

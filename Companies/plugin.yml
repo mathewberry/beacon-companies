@@ -1,8 +1,9 @@
 main: com.mathewberry.companies.CompaniesCore
 name: Companies
 version: 1.0
-author: ["Mathew Berry", "Dale Smith"]
+authors: ["Mathew Berry", "Dale Smith"]
 description: A plugin that adds company's to Minecraft
+softdepend: [Vault]
 commands:
   companies:
     aliases: [c, company]
@@ -10,3 +11,39 @@ commands:
     usage: /<command> [command]
     permission: company.use
     permission-message: You don't have permission.
+permissions:
+  companies.*:
+    description: Gives access to all company commands
+    children:
+      companies.player.*: true
+      companies.admin.*: true
+  companies.player.*:
+    description: Gives access to default player commands
+    children:
+      companies.player.create: true
+      companies.player.delete: true
+      companies.player.deposit: true
+      companies.player.withdraw: true
+      companies.player.balance: true
+  companies.admin.*: 
+    description: Gives access to default admin commands
+    children:
+      companies.admin.rename: true 
+  companies.player.create: 
+    description: Allows a player to create a company
+    default: true
+  companies.player.delete: 
+    description: Allows a player to delete their company
+    default: true
+  companies.player.deposit:
+    description: Allows a player to deposit money
+    default: true
+  companies.player.withdraw:
+    description: Allows a player to withdraw money
+    default: true
+  companies.player.balance:
+    description: Allows a player to view company balance
+    default: true
+  companies.admin.rename:
+    description: Allows a player to rename a company
+    default: op;

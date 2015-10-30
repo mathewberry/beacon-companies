@@ -1,0 +1,16 @@
+package com.mathewberry.companies.plugin.hooks;
+
+public class VaultHandler {
+	
+	private Economy economy = null;
+	
+	public VaultHandler()
+	{
+		setupEconomy();
+	}
+	
+	private boolean setupEconomy()
+	{
+		
+	}
+}

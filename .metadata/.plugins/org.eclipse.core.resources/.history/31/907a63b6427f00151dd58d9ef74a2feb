@@ -1,0 +1,13 @@
+package com.mathewberry.companies.database;
+
+public class Database {
+	
+	private String url;
+	private String username;
+	private String password;
+	
+	public Database(String url, String username, String password) {
+		
+	}
+	
+}
