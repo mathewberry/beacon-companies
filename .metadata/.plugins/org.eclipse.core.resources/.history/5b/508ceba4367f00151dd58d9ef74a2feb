@@ -1,0 +1,7 @@
+package com.mathewberry.companies;
+
+import org.bukkit.command.CommandExecutor;
+
+public class CompaniesCommandExecutor implements CommandExecutor {
+
+}

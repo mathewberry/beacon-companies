@@ -1,0 +1,11 @@
+main: com.mathewberry.companies.CompaniesCore
+name: Companies
+version: 1.0
+author: ["Mathew Berry", "Dale Smith"]
+description: A plugin that adds company's to Minecraft
+commands:
+  c_create:
+    description: Create a custom company
+    usage: /c create
+    permission: companies.create
+    permission-message: You don't have companies.create permission.

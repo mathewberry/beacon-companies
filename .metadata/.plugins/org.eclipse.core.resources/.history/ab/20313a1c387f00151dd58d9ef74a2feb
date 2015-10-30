@@ -1,0 +1,26 @@
+package com.mathewberry.companies;
+
+import java.io.IOException;
+
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class CompaniesCore extends JavaPlugin {
+
+	@Override
+	public void onEnable()
+	{
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch(IOException error) {
+			getCommand("companies").setExecutor(new CompaniesCommandExecutor(this));
+		}
+	}
+	
+	@Override
+	public void onDisable()
+	{
+		
+	}
+	
+}

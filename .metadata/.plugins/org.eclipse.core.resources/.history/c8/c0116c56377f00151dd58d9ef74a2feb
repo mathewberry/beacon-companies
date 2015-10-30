@@ -1,0 +1,32 @@
+package com.mathewberry.companies;
+
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+public class CompaniesCommandExecutor implements CommandExecutor {
+
+	private CompaniesCore plugin;
+	
+	public CompaniesCommandExecutor(CompaniesCore plugin) 
+	{
+		this.plugin = plugin;
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
+	{
+		if(command.getName().equalsIgnoreCase("companies")) {
+			if(args[0].equalsIgnoreCase("create")) {
+				return company_create();
+			}
+		}
+		return false;
+	}
+
+	private boolean company_create() 
+	{
+		return false;
+	}
+
+}

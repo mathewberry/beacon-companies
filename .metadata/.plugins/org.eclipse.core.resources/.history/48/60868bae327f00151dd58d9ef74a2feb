@@ -1,0 +1,17 @@
+package com.mathewberry.companies;
+
+public class CompaniesCore extends JavaPlugin {
+
+	@Override
+	public void onEnable()
+	{
+		
+	}
+	
+	@Override
+	public void onDisable()
+	{
+		
+	}
+	
+}
