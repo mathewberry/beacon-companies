@@ -1,0 +1,5 @@
+package com.mathewberry.companies.persist;
+
+public class IPersistence {
+
+}

@@ -1,0 +1,62 @@
+package com.mathewberry.companies;
+
+import java.util.Map;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.mathewberry.companies.listeners.CompanyListener;
+import com.mathewberry.companies.plugin.hooks.VaultHandler;
+
+import net.milkbowl.vault.Vault;
+
+public class CompaniesCore extends JavaPlugin {
+	
+	private VaultHandler vaultHandler;
+	
+	@Override
+	public void onEnable()
+	{
+	    saveDefaultConfig();
+	    
+	    FileConfiguration config = getConfig();
+	    config.options().copyDefaults(true);
+	    saveConfig();
+	    
+		getCommand("companies").setExecutor(new CompaniesCommandExecutor(this));
+		
+		if((!hasVault())) {
+			getLogger().warning("Vault not found, plugin disabled!");
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
+		
+		CompanyListener companyListener = new CompanyListener(this);
+	}
+
+	@Override
+	public void onDisable()
+	{
+
+	}
+	
+	public static CompaniesCore getInstance()
+	{
+		return (CompaniesCore)Bukkit.getPluginManager().getPlugin("Companies");
+	}
+	
+	public boolean hasVault()
+	{
+		Plugin plugin = getServer().getPluginManager().getPlugin("Vault");
+		if ((plugin == null) || (!(plugin instanceof Vault))) {
+			return false;
+		}
+		return true;
+	}
+	
+	public VaultHandler getVaultHandler()
+	{
+		return this.vaultHandler;
+	}
+}

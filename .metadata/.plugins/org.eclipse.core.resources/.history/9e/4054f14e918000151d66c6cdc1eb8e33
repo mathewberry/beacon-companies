@@ -1,0 +1,7 @@
+package com.mathewberry.companies.persist;
+
+public class PersistenceFlatFile implements IPersistence 
+{
+
+
+}

@@ -1,0 +1,21 @@
+package com.mathewberry.companies.utils;
+
+import java.io.IOException;
+
+public class Storage {
+	private File storageFile;
+	private ArrayList<String> values;
+	
+	public ListStore(File file) {
+		this.storageFile = file;
+		this.values = new ArrayList<String>();
+		
+		if(this.storageFile.exists() == false) {
+			try {
+				this.storageFile.createNewFile()
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}

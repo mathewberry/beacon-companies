@@ -1,0 +1,16 @@
+package com.mathewberry.companies.listeners;
+
+import org.bukkit.event.Listener;
+
+import com.mathewberry.companies.CompaniesCore;
+
+public class CompanyListener implements Listener 
+{
+	private final CompaniesCore plugin;
+	
+	public CompanyListener(final CompaniesCore companiesCore) 
+	{
+		this.plugin = plugin;
+	}
+
+}

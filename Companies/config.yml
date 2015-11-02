@@ -1,4 +1,5 @@
 database:
+  driver: FlatFile
   url: 'mysql://localhost:3306/companies'
   username: 'root'
   password: ''

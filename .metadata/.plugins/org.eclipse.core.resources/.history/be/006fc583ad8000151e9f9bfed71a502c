@@ -1,0 +1,5 @@
+package com.mathewberry.companies.commands;
+
+public class DepositCommand {
+
+}

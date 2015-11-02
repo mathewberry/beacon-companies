@@ -1,0 +1,13 @@
+package com.mathewberry.companies.commands;
+
+import org.bukkit.command.CommandSender;
+
+public class HelpCommand 
+{
+	
+	public HelpCommand(CommandSender sender, String args[], String label)
+	{
+		
+	}
+	
+}

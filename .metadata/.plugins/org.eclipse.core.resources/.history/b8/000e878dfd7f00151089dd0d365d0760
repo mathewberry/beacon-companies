@@ -1,0 +1,16 @@
+package com.mathewberry.companies;
+
+import com.huskehhh.mysql.mysql.MySQL;
+
+public class MySQLManager {
+	
+	private final CompaniesCore companies;
+	private MySQL db;
+	
+	public MySQLManager(CompaniesCore companies) 
+	{
+		this.companies = companies;
+	}
+	
+	
+}

@@ -1,0 +1,10 @@
+package com.mathewberry.companies;
+
+public class MySQLManager {
+	private final CompaniesCore companies;
+	
+	public MySQLManager(CompaniesCore companies) 
+	{
+		this.companies = companies;
+	}
+}

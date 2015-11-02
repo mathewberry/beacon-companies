@@ -1,0 +1,10 @@
+package com.mathewberry.companies.listeners;
+
+public class CompanyListener {
+
+	public CompanyListener(CompaniesCore companiesCore) 
+	{
+		
+	}
+
+}

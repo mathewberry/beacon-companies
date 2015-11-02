@@ -1,0 +1,8 @@
+package com.mathewberry.companies.commands;
+
+public class HelpCommand 
+{
+	
+	public HelpCommand(CommandSender sender, String args[], String label)
+	
+}

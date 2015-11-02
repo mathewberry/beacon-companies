@@ -1,0 +1,72 @@
+package com.mathewberry.companies;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.mathewberry.companies.listeners.CompanyListener;
+import com.mathewberry.companies.plugin.hooks.VaultHandler;
+
+import net.milkbowl.vault.Vault;
+
+public class CompaniesCore extends JavaPlugin {
+	
+	private VaultHandler vaultHandler;
+	private CompanyListener companyListener;
+	private IPersistence persistence;
+	
+	@Override
+	public void onEnable()
+	{
+	    saveDefaultConfig();
+	    
+	    FileConfiguration config = getConfig();
+	    config.options().copyDefaults(true);
+	    saveConfig();
+	    
+		getCommand("companies").setExecutor(new CompaniesCommandExecutor(this));
+		
+		if((!hasVault())) {
+			getLogger().warning("Vault not found, plugin disabled!");
+			Bukkit.getPluginManager().disablePlugin(this);
+		}
+		
+		if("FlatFile".equalsIgnoreCase(config.getString("database.driver"))) {
+			persistence = new PersistenceFlatFile(this);
+		} else {
+			persistence = new PersistenceDatabase(this);
+		}
+		
+		companyListener = new CompanyListener(this);
+		
+		PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(companyListener, this);
+	}
+
+	@Override
+	public void onDisable()
+	{
+
+	}
+	
+	public static CompaniesCore getInstance()
+	{
+		return (CompaniesCore)Bukkit.getPluginManager().getPlugin("Companies");
+	}
+	
+	public boolean hasVault()
+	{
+		Plugin plugin = getServer().getPluginManager().getPlugin("Vault");
+		if ((plugin == null) || (!(plugin instanceof Vault))) {
+			return false;
+		}
+		return true;
+	}
+	
+	public VaultHandler getVaultHandler()
+	{
+		return this.vaultHandler;
+	}
+}

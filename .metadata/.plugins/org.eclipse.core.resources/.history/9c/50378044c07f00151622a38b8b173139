@@ -1,0 +1,7 @@
+database:
+  driver: mysql
+  url: 'mysql://localhost:3306/companies'
+  username: 'root'
+  password: ''
+  logging: false
+  rebuild: false

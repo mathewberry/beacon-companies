@@ -1,0 +1,211 @@
+package com.mathewberry.companies.persistant.data;
+
+import java.lang.reflect.Field;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.EbeanServerFactory;
+import com.avaje.ebean.config.DataSourceConfig;
+import com.avaje.ebean.config.ServerConfig;
+import com.avaje.ebean.config.dbplatform.SQLitePlatform;
+import com.avaje.ebeaninternal.api.SpiEbeanServer;
+import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+
+public abstract class Database {
+	
+	private JavaPlugin javaPlugin;
+	private ClassLoader classLoader;
+	private Level loggerLevel;
+	private boolean usingSQLite;
+	private ServerConfig serverConfig;
+	private EbeanServer ebeanServer;
+	private List<List> holds;
+	
+	public void initializeDatabase(String driver, String url, String username, String password, String isolation, boolean logging, boolean rebuild) 
+	{
+		try {
+			disableDatabaseLogging(logging);
+			prepareDatabase(driver, url, username, password, isolation);
+			loadDatabase();
+			installDatabase(rebuild);
+		} catch(Exception error) {
+			throw new RuntimeException("An exception has occured while initializing the database", error);
+		} finally {
+			enableDatabaseLogging(logging);
+		}
+	}
+
+	private void enableDatabaseLogging(boolean logging) 
+	{
+		if(logging) {
+			return;
+		}
+		Logger.getLogger("").setLevel(this.loggerLevel);
+	}
+
+	private void disableDatabaseLogging(boolean logging) 
+	{
+		if(logging) {
+			return;
+		}
+		this.loggerLevel = Logger.getLogger("").getLevel();
+		Logger.getLogger("").setLevel(Level.OFF);
+	}
+
+	private void installDatabase(boolean rebuild) 
+	{
+		boolean databaseExists = false;
+	    
+	    List<Class<?>> classes = getDatabaseClasses();
+	    for (int i = 0; i < classes.size(); i++) {
+	      try
+	      {
+	        this.ebeanServer.find((Class)classes.get(i)).findRowCount();
+	        
+	        databaseExists = true;
+	      }
+	      catch (Exception ex)
+	      {
+	        System.out.println(((Class)classes.get(i)).getName() + " doesn't exist!");
+	        DdlGenerator g = ((SpiEbeanServer)this.ebeanServer).getDdlGenerator();
+	        
+	        String gs = g.generateCreateDdl();
+	        String[] scriptStatements = gs.split(";");
+	        for (String s : scriptStatements) {
+	          if (s.contains("create table " + ((Table)((Class)classes.get(i)).getAnnotation(Table.class)).name()))
+	          {
+	            g.runScript(false, s + ";");
+	            break;
+	          }
+	        }
+	      }
+	    }
+	    if ((!rebuild) && (databaseExists)) {
+	      return;
+	    }
+	    
+	    SpiEbeanServer serv = (SpiEbeanServer)this.ebeanServer;
+	    DdlGenerator gen = serv.getDdlGenerator();
+	    
+	    try {
+	      beforeDropDatabase();
+	    } catch (Exception ex) {
+	      if (databaseExists) {
+	        throw new RuntimeException("An unexpected exception occured", ex);
+	      }
+	    }
+	    gen.runScript(true, gen.generateDropDdl());
+	    
+	    if (this.usingSQLite) {
+	      loadDatabase();
+	    }
+	    
+	    if (this.usingSQLite) {
+	      gen.runScript(false, validateCreateDDLSqlite(gen.generateCreateDdl()));
+	    } else {
+	      gen.runScript(false, gen.generateCreateDdl());
+	    }
+	    
+	    try {
+	      afterCreateDatabase();
+	    } catch (Exception ex) {
+	      throw new RuntimeException("An unexpected exception occured", ex);
+	    }
+	}
+
+	private void loadDatabase() 
+	{
+		ClassLoader currentClassLoader = null;
+	    Field cacheField = null;
+	    boolean cacheValue = true;
+	    try
+	    {
+	      currentClassLoader = Thread.currentThread().getContextClassLoader();
+	      
+	      Thread.currentThread().setContextClassLoader(this.classLoader);
+	      
+	      cacheField = URLConnection.class.getDeclaredField("defaultUseCaches");
+	      
+	      cacheField.setAccessible(true);
+	      cacheValue = cacheField.getBoolean(null);
+	      cacheField.setBoolean(null, false);
+	      
+	      this.ebeanServer = EbeanServerFactory.create(this.serverConfig); return;
+	    }
+	    catch (Exception ex)
+	    {
+	      throw new RuntimeException("Failed to create a new instance of the EbeanServer", ex);
+	    }
+	    finally
+	    {
+	      if (currentClassLoader != null) {
+	        Thread.currentThread().setContextClassLoader(currentClassLoader);
+	      }
+	      try
+	      {
+	        if (cacheField != null) {
+	          cacheField.setBoolean(null, cacheValue);
+	        }
+	      }
+	      catch (Exception e)
+	      {
+	        System.out.println("Failed to revert the \"defaultUseCaches\"-field back to its original value, URLConnection-caching remains disabled.");
+	      }
+	}
+
+	private void prepareDatabase(String driver, String url, String username, String password, String isolation) 
+	{
+		DataSourceConfig ds = new DataSourceConfig();
+		ds.setDriver(driver);
+		ds.setUrl(replaceDatabaseString(url));
+		ds.setUsername(username);
+		ds.setPassword(password);
+		ds.setIsolationLevel(TranscationIsolation.getLevel(isolation));
+		
+		ServerConfig sc = new ServerConfig();
+		sc.setDefaultServer(false);
+		sc.setRegister(false);
+		sc.setName(ds.getUrl().replaceAll("[^a-zA-Z0-9]", ""));
+		
+		List<Class<?>> classes = getDatabaseClasses();
+	    if (classes.size() == 0) {
+	      throw new RuntimeException("Database has been enabled, but no classes are registered to it");
+	    }
+	    sc.setClasses(classes);
+	    if (ds.getDriver().equalsIgnoreCase("org.sqlite.JDBC"))
+	    {
+	      this.usingSQLite = true;
+	      
+	      sc.setDatabasePlatform(new SQLitePlatform());
+	      sc.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
+	    }
+	    prepareDatabaseAdditionalConfig(ds, sc);
+	    
+	    sc.setDataSourceConfig(ds);
+	    
+	    this.serverConfig = sc;
+	}
+	
+	protected List<Class<?>> getDatabaseClasses()
+	{
+		return new ArrayList();
+	}
+	
+	protected void beforeDropDatabase() {}
+		  
+	protected void afterCreateDatabase() {}
+		  
+	protected void prepareDatabaseAdditionalConfig(DataSourceConfig dataSourceConfig, ServerConfig serverConfig) {}
+	
+	public EbeanServer getDatabase()
+	{
+		return this.ebeanServer;
+	}
+	
+}

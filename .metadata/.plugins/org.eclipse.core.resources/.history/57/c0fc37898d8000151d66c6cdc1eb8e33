@@ -1,0 +1,11 @@
+package com.mathewberry.companies.models;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "companies")
+public class CompanyTable 
+{
+
+}

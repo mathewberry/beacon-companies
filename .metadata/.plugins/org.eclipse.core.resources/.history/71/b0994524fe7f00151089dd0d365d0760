@@ -1,0 +1,23 @@
+package com.mathewberry.companies;
+
+import java.sql.Statement;
+
+import com.huskehhh.mysql.mysql.MySQL;
+
+public class MySQLManager {
+	
+	private final CompaniesCore companies;
+	private MySQL db;
+	
+	public MySQLManager(CompaniesCore companies) 
+	{
+		this.companies = companies;
+	}
+	
+	public void setupDB()
+	{
+		this.db = new MySQL("localhost", "3306", "beacon_core", "root", "");
+		this.db.openConnection();
+		Statement statement = this.db.getConnection().createStatement();
+	}
+}

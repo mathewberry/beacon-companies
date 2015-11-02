@@ -1,0 +1,25 @@
+package com.mathewberry.companies.persist;
+
+public class PersistenceFlatFile implements IPersistence 
+{
+
+	@Override
+	public String loadSomething(String companyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveSomething(String companyName, String username, float balance) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}

@@ -1,0 +1,48 @@
+package com.mathewberry.companies.persist;
+
+import javax.persistence.PersistenceException;
+
+import com.mathewberry.companies.CompaniesCore;
+import com.mathewberry.companies.models.CompanyTable;
+
+public class PersistenceDatabase implements IPersistence 
+{
+	private final CompaniesCore plugin;
+	
+	public PersistenceDatabase(CompaniesCore plugin)
+	{
+		this.plugin = plugin;
+		checkDDL();
+	}
+	
+	private void checkDDL()
+	{
+		try {
+			plugin.getDatabase().find(CompanyTable.class).findRowCount();
+		} catch(PersistenceException error) {
+			plugin.installDDL();
+		}
+	}
+	
+	@Override
+	public String loadSomething(String key) 
+	{
+		return null;
+	}
+
+	public void saveSomething(final String key, final String text) 
+	{
+		CompanyTable company = plugin.getDatabase().createEntityBean(CompanyTable.class);
+		company.setId(key);
+		company.setCompany)(text);
+		
+		plugin.getDatabase().save(company);
+	}
+
+	@Override
+	public void shutdown() 
+	{
+
+	}
+
+}
