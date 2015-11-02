@@ -23,6 +23,9 @@ permissions:
   companies.withdraw:
     description: Allows a player to withdraw money
     default: true
+  companies.withdraw.others:
+    description: Allows a player to withdraw money from any company
+    default: false
   companies.balance:
     description: Allows a player to view their company balance
     default: true
