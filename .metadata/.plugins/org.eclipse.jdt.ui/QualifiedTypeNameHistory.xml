@@ -38,4 +38,7 @@
 <fullyQualifiedTypeName name="com.mathewberry.companies.CompaniesCore"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="com.avaje.ebean.Query"/>
+<fullyQualifiedTypeName name="com.avaje.ebean.SqlUpdate"/>
+<fullyQualifiedTypeName name="com.mathewberry.companies.commands.CreateCommand"/>
+<fullyQualifiedTypeName name="javax.persistence.PersistenceException"/>
 </qualifiedTypeNameHistroy>

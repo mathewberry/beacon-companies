@@ -1,4 +1,4 @@
-main: com.mathewberry.companies.CompaniesCore
+main: com.mathewberry.companies.Companies
 name: Companies
 version: 1.0
 author: Mathew Berry
@@ -17,9 +17,15 @@ permissions:
   companies.delete: 
     description: Allows a player to delete their company
     default: true
+  companies.delete.others:
+    description: Allows player/console to delete a company
+    default: false
   companies.deposit:
     description: Allows a player to deposit money
     default: true
+  companies.deposit.others:
+    description: Allow a player to deposit money to any company
+    default: false
   companies.withdraw:
     description: Allows a player to withdraw money
     default: true
@@ -34,4 +40,7 @@ permissions:
     default: false
   companies.rename:
     description: Allows a player to rename a company
+    default: false
+  companies.rename.others:
+    description: Allows a player to rename any company
     default: false

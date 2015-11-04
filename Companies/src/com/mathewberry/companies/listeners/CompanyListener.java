@@ -5,14 +5,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-import com.mathewberry.companies.CompaniesCore;
+import com.mathewberry.companies.Companies;
 
 public class CompanyListener implements Listener 
 {
 	@SuppressWarnings("unused")
-	private final CompaniesCore plugin;
+	private final Companies plugin;
 	
-	public CompanyListener(final CompaniesCore plugin) 
+	public CompanyListener(final Companies plugin) 
 	{
 		this.plugin = plugin;
 	}
