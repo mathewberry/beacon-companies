@@ -1,0 +1,10 @@
+package com.mathewberry.companies.helpers;
+
+public class DatabaseHelper {
+
+	public static Timestamp currentTime()
+	{
+		
+	}
+	
+}

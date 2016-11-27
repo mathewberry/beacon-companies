@@ -1,0 +1,69 @@
+package com.mathewberry.companies.tables;
+
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "mc_ranks")
+public class CompanyRanksTable {
+	
+	@Id private int id;
+	@Column private int company_id;
+	@Column private String rank;
+	@Column private float wage;
+	@Column private boolean default_rank;
+	
+	@ManyToOne(cascade=CascadeType.PERSIST)
+	List<CompanyTable> company;
+
+	public int getId()
+	{
+		return id;
+	}
+	
+	public int getCompany_id()
+	{
+		return company_id;
+	}
+	
+	public String getRank()
+	{
+		return rank;
+	}
+	
+	public float getWage()
+	{
+		return wage;
+	}
+	
+	public boolean isDefault_rank()
+	{
+		return default_rank;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+	
+	public void setCompany_id(int company_id)
+	{
+		this.company_id = company_id;
+	}
+	
+	public void setRank(String rank)
+	{
+		this.rank = rank;
+	}
+	
+	public void setDefault_rank(boolean default_rank)
+	{
+		this.default_rank = default_rank;
+	}
+}

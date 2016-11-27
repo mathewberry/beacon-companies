@@ -1,0 +1,107 @@
+package com.mathewberry.companies.commands;
+
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+import com.mathewberry.companies.Companies;
+import com.mathewberry.companies.commands.applicant.ApplicantCommand;
+import com.mathewberry.companies.commands.applicant.ApplyCommand;
+import com.mathewberry.companies.commands.applicant.HireCommand;
+import com.mathewberry.companies.commands.applicant.RejectCommand;
+import com.mathewberry.companies.commands.console.CleanCommand;
+import com.mathewberry.companies.commands.employee.EmployeesCommand;
+import com.mathewberry.companies.commands.employee.FireCommand;
+import com.mathewberry.companies.commands.employee.GetRankCommand;
+import com.mathewberry.companies.commands.employee.PayEmployeesCommand;
+import com.mathewberry.companies.commands.employee.ResignCommand;
+import com.mathewberry.companies.commands.employee.SetRankCommand;
+import com.mathewberry.companies.commands.general.CreateCommand;
+import com.mathewberry.companies.commands.general.DeleteCommand;
+import com.mathewberry.companies.commands.general.HelpCommand;
+import com.mathewberry.companies.commands.general.ListCommand;
+import com.mathewberry.companies.commands.general.RenameCommand;
+import com.mathewberry.companies.commands.general.VisibleCommand;
+import com.mathewberry.companies.commands.job.JobInfoCommand;
+import com.mathewberry.companies.commands.job.JobJoinCommand;
+import com.mathewberry.companies.commands.job.JobListCommand;
+import com.mathewberry.companies.commands.minable.DeleteMineCommand;
+import com.mathewberry.companies.commands.minable.EmployeeStatsCommand;
+import com.mathewberry.companies.commands.minable.ListMinesCommand;
+import com.mathewberry.companies.commands.minable.RegisterMineCommand;
+import com.mathewberry.companies.commands.money.BalanceCommand;
+import com.mathewberry.companies.commands.money.DepositCommand;
+import com.mathewberry.companies.commands.money.WithdrawCommand;
+import com.mathewberry.companies.commands.permission.GrantPermCommand;
+import com.mathewberry.companies.commands.permission.ListPermsCommand;
+import com.mathewberry.companies.commands.permission.RevokePermCommand;
+import com.mathewberry.companies.commands.product.BrowseCommand;
+import com.mathewberry.companies.commands.product.BuyCommand;
+import com.mathewberry.companies.commands.product.CancelCommand;
+import com.mathewberry.companies.commands.product.LinkCommand;
+import com.mathewberry.companies.commands.product.PriceCommand;
+import com.mathewberry.companies.commands.product.ProductInfoCommand;
+import com.mathewberry.companies.commands.product.RecallCommand;
+import com.mathewberry.companies.commands.product.RestockCommand;
+import com.mathewberry.companies.commands.product.SellCommand;
+import com.mathewberry.companies.commands.product.UnlinkCommand;
+import com.mathewberry.companies.commands.rank.AddRankCommand;
+import com.mathewberry.companies.commands.rank.GetDefaultRankCommand;
+import com.mathewberry.companies.commands.rank.GetWageCommand;
+import com.mathewberry.companies.commands.rank.ListRanksCommand;
+import com.mathewberry.companies.commands.rank.RemoveRankCommand;
+import com.mathewberry.companies.commands.rank.SetDefaultRankCommand;
+import com.mathewberry.companies.commands.rank.SetWageCommand;
+import com.mathewberry.companies.commands.stock.AddStockSignCommand;
+import com.mathewberry.companies.commands.stock.InfoStockSignCommand;
+import com.mathewberry.companies.commands.stock.ListStockSignsCommand;
+import com.mathewberry.companies.commands.stock.RemoveStockSignCommand;
+
+public class CommandCore implements CommandExecutor {
+
+	private Companies plugin;
+
+	public CommandCore(Companies plugin) 
+	{
+		this.plugin = plugin;
+	}
+	
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) 
+	{
+		if(command.getName().equalsIgnoreCase("companies")) {
+			if(args.length == 0) {
+				return new HelpCommand().onCommand(sender, args, label);
+			}
+			
+			switch(args[0]) {
+				// General Commands
+				case "help": return new HelpCommand().onCommand(sender, args, label);
+				case "list": return new ListCommand(plugin).onCommand(sender, args);
+				case "create": return new CreateCommand(plugin).onCommand(sender, args);
+				case "delete": return new DeleteCommand(plugin).onCommand(sender, args);
+				case "rename": return new RenameCommand(plugin).onCommand(sender, args);
+				case "visible": return new VisibleCommand(plugin).onCommand(sender, args);
+			}
+		}
+		return false;
+	}
+	
+	public static  void paginate(CommandSender sender, Map<Integer, String> map, int page, int pageLength) 
+	{
+		sender.sendMessage(ChatColor.GREEN + "List: Page (" + String.valueOf(page) + " of " + (((map.size() % pageLength) == 0) ? map.size() / pageLength : (map.size() / pageLength) + 1 + ")"));
+	    int i = 0, k = 0;
+	    page--;
+	    for (final Entry<Integer, String> e : map.entrySet()) {
+	        k++;
+	        if ((((page * pageLength) + i + 1) == k) && (k != ((page * pageLength) + pageLength + 1))) {
+	            i++;
+	            sender.sendMessage(ChatColor.GREEN + " - " + e.getValue());
+	        }
+	    }
+	}
+}

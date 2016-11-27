@@ -1,0 +1,62 @@
+package com.mathewberry.companies.tables;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "players")
+public class PlayerTable 
+{
+	@Id
+	private BigInteger id;
+	
+	@Column(name="uuid", length=36, nullable=false)
+	private String uuid;
+	
+	@Column(name="playtime")
+	private double playtime;
+	
+	@Column(name="created_at", nullable=false)
+	private Timestamp createdAt;
+	
+	@Column(name="updated_at", nullable=true)
+	private Timestamp updatedAt;
+	
+	@Column(name="deleted_at", nullable=true)
+	private Timestamp deletedAt;
+	
+	public Timestamp getCreatedAt()
+	{
+		return this.createdAt;
+	}
+	
+	public Timestamp getUpdatedAt()
+	{
+		return this.updatedAt;
+	}
+	
+	public Timestamp getDeletedAt()
+	{
+		return this.deletedAt;
+	}
+	
+	public void setCreatedAt(Timestamp createdAt)
+	{
+		this.createdAt = createdAt;
+	}
+	
+	public void setUpdatedAt(Timestamp updatedAt)
+	{
+		this.updatedAt = updatedAt;
+	}
+	
+	public void setDeletedAt(Timestamp deletedAt)
+	{
+		this.deletedAt = deletedAt;
+	}
+}

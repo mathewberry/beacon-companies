@@ -1,0 +1,14 @@
+package com.mathewberry.companies.helpers;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
+public class CommandHelper {
+
+	public String getPlayerUUID(CommandSender sender)
+	{
+		Player player = Bukkit.getServer().getPlayer(sender.getName());
+		return player.getUniqueId().toString();
+	}
+	
+}

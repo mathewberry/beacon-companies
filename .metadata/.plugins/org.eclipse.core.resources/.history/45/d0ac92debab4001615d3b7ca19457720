@@ -1,0 +1,120 @@
+package com.mathewberry.companies.tables;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "companies")
+public class CompanyTable 
+{
+	@Id
+	private BigInteger id;
+	
+	@Column(name="name", length=128, nullable=false)
+	private String name;
+	
+	@OneToOne 
+	@MapsId
+	@Column(name="player_id", nullable=false)
+	private PlayerTable playerId;
+	
+	@Column(name="balance", nullable=true)
+	private float balance;
+	
+	@Column(name="visible", nullable=false)
+	private boolean visible = false;
+	
+	@Column(name="created_at", nullable=false)
+	private Timestamp createdAt;
+	
+	@Column(name="updated_at", nullable=true)
+	private Timestamp updatedAt;
+	
+	@Column(name="deleted_at", nullable=true)
+	private Timestamp deletedAt;
+	
+	public BigInteger getId()
+	{
+		return this.id;
+	}
+	
+	public String getName()
+	{
+		return this.name;
+	}
+	
+	public BigInteger getPlayerId()
+	{
+		return this.playerId;
+	}
+	
+	public float getBalance()
+	{
+		return this.balance;
+	}
+	
+	public boolean isVisible()
+	{
+		return this.visible;
+	}
+	
+	public Timestamp getCreatedAt()
+	{
+		return this.createdAt;
+	}
+	
+	public Timestamp getUpdatedAt()
+	{
+		return this.updatedAt;
+	}
+	
+	public Timestamp getDeletedAt()
+	{
+		return this.deletedAt;
+	}
+	
+	public void setId(BigInteger id)
+	{
+		this.id = id;
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	public void setPlayerId(BigInteger playerId)
+	{
+		this.playerId = playerId;
+	}
+	
+	public void setBalance(float balance)
+	{
+		this.balance = balance;
+	}
+	
+	public void setVisible(boolean visible)
+	{
+		this.visible = visible;
+	}
+	
+	public void setCreatedAt(Timestamp createdAt)
+	{
+		this.createdAt = createdAt;
+	}
+	
+	public void setUpdatedAt(Timestamp updatedAt)
+	{
+		this.updatedAt = updatedAt;
+	}
+	
+	public void setDeletedAt(Timestamp deletedAt)
+	{
+		this.deletedAt = deletedAt;
+	}
+}

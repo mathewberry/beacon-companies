@@ -1,0 +1,73 @@
+package com.mathewberry.companies.commands.general;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.avaje.ebean.SqlUpdate;
+import com.mathewberry.companies.Companies;
+import com.mathewberry.companies.helpers.DatabaseHelper;
+import com.mathewberry.companies.tables.CompanyTable;
+
+import net.md_5.bungee.api.ChatColor;
+
+public class VisibleCommand {
+	
+	private Companies plugin;
+	
+	public VisibleCommand(Companies plugin)
+	{
+		this.plugin = plugin;
+	}
+
+	public boolean onCommand(CommandSender sender, String[] args) 
+	{
+		if(!(sender instanceof Player)) {
+			sender.sendMessage("This command can only be run by a player.");
+			return true;
+		} else {
+			Player player = (Player)sender;
+			if(!player.hasPermission("companies.visible")) {
+				player.sendMessage(ChatColor.RED + "You do not have permission.");
+				return true;
+			}
+			
+			if(args.length < 3) {
+				sender.sendMessage(ChatColor.RED + "Usage: /c visible (public/private) <company>");
+				return true;
+			}
+			
+			CompanyTable company = DatabaseHelper.findCompany(plugin, args[1]);
+			
+			if(company == null) {
+				sender.sendMessage(ChatColor.RED + "This company does not exist " + args[1]);
+				return true;
+			} else {
+				if(!company.getOwner().equals(sender.getName())) {
+					sender.sendMessage(ChatColor.RED + "You don't have permission to edit other companies");
+					return true;
+				}
+				
+				int visibility = 0;
+				
+				if(args[1].equalsIgnoreCase("public") || args[1].equalsIgnoreCase("private")) {
+					if(args[1].equalsIgnoreCase("public")) {
+						visibility = 1;
+					} else if(args[1].equalsIgnoreCase("private")) {
+						visibility = 0;
+					}
+					
+					company.setVisible(true);
+					company.setUpdatedAt(DatabaseHelper.currentTime());
+					
+					plugin.getDatabase().update(company);
+					
+					sender.sendMessage(ChatColor.GREEN + args[2] + ChatColor.WHITE + " is now " + ChatColor.AQUA + args[1] );
+					return true;
+				}
+				
+				sender.sendMessage(ChatColor.RED + "Please use /c visible (public/private) <company>");
+				return true;
+			}
+		}
+	}
+}

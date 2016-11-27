@@ -1,0 +1,67 @@
+package com.mathewberry.companies.commands.general;
+
+import java.util.List;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.avaje.ebean.Query;
+import com.avaje.ebean.SqlUpdate;
+import com.mathewberry.companies.Companies;
+import com.mathewberry.companies.helpers.DatabaseHelper;
+import com.mathewberry.companies.tables.CompanyTable;
+
+import net.md_5.bungee.api.ChatColor;
+
+public class DeleteCommand {
+	
+	private Companies plugin;
+	
+	public DeleteCommand(Companies plugin)
+	{
+		this.plugin = plugin;
+	}
+
+	public boolean onCommand(CommandSender sender, String[] args) 
+	{
+		if(!(sender instanceof Player)) {
+			sender.sendMessage("This command can only be run by a player.");
+			return true;
+		} else {
+			Player player = (Player)sender;
+			if(!player.hasPermission("companies.delete")) {
+				player.sendMessage(ChatColor.RED + "You do not have permission.");
+				return true;
+			}
+			
+			if(args.length < 2) {
+				sender.sendMessage(ChatColor.RED + "Usage: /c delete <company>");
+				return true;
+			} else {
+				Query<CompanyTable> query = plugin.getDatabase().find(CompanyTable.class);
+				query.where().eq("name", args[1]);
+		
+				CompanyTable company = query.findUnique();
+				
+				if(company == null) {
+					sender.sendMessage(ChatColor.RED + "This company does not exist " + args[1]);
+					return true;
+				} else {
+					if(!company.getOwner().equals(sender.getName())) {
+						if(!player.hasPermission("companies.delete.others")) {
+							sender.sendMessage(ChatColor.RED + "You don't have permission to delete other peoples companies");
+							return true;
+						}
+					}
+					
+					company.setDeletedAt(DatabaseHelper.currentTime());
+					
+					plugin.getDatabase().update(company);
+					
+					sender.sendMessage(ChatColor.DARK_RED + args[1] + " deleted!");
+					return true;
+				}
+			}
+		}
+	}
+}

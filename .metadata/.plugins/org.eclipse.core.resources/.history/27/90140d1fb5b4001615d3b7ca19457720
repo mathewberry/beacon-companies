@@ -1,0 +1,61 @@
+package com.mathewberry.companies.commands.general;
+
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.avaje.ebean.Query;
+import com.mathewberry.companies.Companies;
+import com.mathewberry.companies.commands.CommandCore;
+import com.mathewberry.companies.helpers.CommandHelper;
+import com.mathewberry.companies.tables.CompanyTable;
+
+import net.md_5.bungee.api.ChatColor;
+
+public class ListCommand {
+
+	private Companies plugin;
+	
+	public ListCommand(Companies plugin)
+	{
+		this.plugin = plugin;
+	}
+	
+	public boolean onCommand(CommandSender sender, String[] args) 
+	{
+		Player player = (Player)sender;
+		if(!player.hasPermission("companies.list")) {
+			player.sendMessage(ChatColor.RED + "You do not have permission.");
+			return true;
+		}
+		
+		if(args.length < 1) {
+			sender.sendMessage(ChatColor.RED + "Usage: /c list");
+			return true;
+		}
+		
+		Query<CompanyTable> query = plugin.getDatabase().find(CompanyTable.class);
+		query.select("name, owner, visible");
+		query.where().isNull("deleted_at");
+		
+		List<CompanyTable> company = query.findList();
+		
+		sender.sendMessage(ChatColor.GREEN + "--|| Company Listings" + ChatColor.GREEN + " ||--");
+		Map<Integer, String> map = new TreeMap<Integer, String>();
+		
+		for(int count = 0; count < company.size(); count++) {
+			if(company.get(count).isVisible()) {
+				String owner = company.get(count).getOwner();
+				map.put(count, ChatColor.AQUA + company.get(count).getName() + ChatColor.WHITE + " | " + ChatColor.AQUA + CommandHelper.getPlayerName(owner));
+			}
+		}
+		
+		CommandCore.paginate(sender, map, 1, 17);
+		sender.sendMessage(ChatColor.GREEN + "Next page: /c help <page number>");
+		
+		return true;
+	}
+}

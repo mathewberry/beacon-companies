@@ -1,7 +1,0 @@
-package com.mathewberry.companies.persistant.data;
-
-@Entity
-@Table(name="mc_companies")
-public class Companies {
-
-}

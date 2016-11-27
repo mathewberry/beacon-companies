@@ -1,0 +1,10 @@
+package com.mathewberry.companies.tables;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "ranks")
+public class CompanyRanksTable {
+	
+}

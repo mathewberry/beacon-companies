@@ -1,0 +1,118 @@
+package com.mathewberry.companies.tables;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "companies")
+public class CompanyTable 
+{
+	@Id 
+	private BigInteger id;
+	
+	@Column(name="name", length=32)
+	private String name;
+	
+	@Column(name="owner", length=16)
+	private String owner;
+	
+	@Column(name="balance")
+	private float balance;
+	
+	@Column(name="visible")
+	private boolean visible = false;
+	
+	@Column(name="created_at")
+	private Timestamp created;
+	
+	@Column(name="updated_at")
+	private Timestamp updated;
+	
+	@Column(name="deleted_at", nullable=true)
+	private Timestamp deleted;
+	
+	public BigInteger getId()
+	{
+		return this.id;
+	}
+	
+	public String getName()
+	{
+		return this.name;
+	}
+	
+	public String getOwner()
+	{
+		return this.owner;
+	}
+	
+	public float getBalance()
+	{
+		return this.balance;
+	}
+	
+	public boolean isVisible()
+	{
+		return this.visible;
+	}
+	
+	public Timestamp getCreated(Timestamp created_at)
+	{
+		return this.created;
+	}
+	
+	public Timestamp getUpdated(Timestamp updated_at)
+	{
+		return this.updated;
+	}
+	
+	public Timestamp getDeleted(Timestamp deleted_at)
+	{
+		return this.deleted;
+	}
+	
+	public void setId(BigInteger id)
+	{
+		this.id = id;
+	}
+	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+	
+	public void setBalance(float balance)
+	{
+		this.balance = balance;
+	}
+	
+	public void setVisible(boolean visible)
+	{
+		this.visible = visible;
+	}
+	
+	public void setCreated(Timestamp created_at)
+	{
+		this.created = created_at;
+	}
+	
+	public void setUpdated(Timestamp updated_at)
+	{
+		this.updated = updated_at;
+	}
+	
+	public void setDeleted(Timestamp deleted_at)
+	{
+		this.deleted = deleted_at;
+	}
+}

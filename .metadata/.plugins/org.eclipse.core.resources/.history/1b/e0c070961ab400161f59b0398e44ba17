@@ -1,0 +1,52 @@
+main: com.mathewberry.companies.Companies
+name: Companies
+version: 1.0
+author: Mathew Berry
+database: true
+description: What better to enjoy Minecraft other than role playing companies to expand and control terrority.
+softdepend: [Vault, WorldGuard, WorldEdit]
+commands:
+  companies:
+    aliases: [c, company]
+    description: You can use /c help for all commands.
+    usage: /command <sub-command>
+permissions:
+  companies.create:
+    description: Allows a player to create a company
+    default: true
+  companies.delete: 
+    description: Allows a player to delete their company
+    default: true
+  companies.delete.others:
+    description: Allows player/console to delete a company
+    default: false
+  companies.deposit:
+    description: Allows a player to deposit money
+    default: true
+  companies.deposit.others:
+    description: Allow a player to deposit money to any company
+    default: false
+  companies.withdraw:
+    description: Allows a player to withdraw money
+    default: true
+  companies.withdraw.others:
+    description: Allows a player to withdraw money from any company
+    default: false
+  companies.balance:
+    description: Allows a player to view their company balance
+    default: true
+  companies.balance.others:
+    description: Allows a player to view any companies balance
+    default: false
+  companies.rename:
+    description: Allows a player to rename a company
+    default: false
+  companies.rename.others:
+    description: Allows a player to rename any company
+    default: false
+  companies.visible:
+    description: Allows a player to make their company visible
+    default: true
+  companies.list:
+    description: Allows a player to view all public companies
+    default: true

@@ -1,98 +1,216 @@
 package com.mathewberry.companies;
 
-import java.util.LinkedList;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.PersistenceException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mathewberry.companies.listeners.CompanyListener;
+import com.avaje.ebean.Query;
+import com.mathewberry.companies.commands.CommandCore;
+import com.mathewberry.companies.helpers.DatabaseHelper;
 import com.mathewberry.companies.tables.CompanyTable;
+import com.mathewberry.companies.tables.PlayerTable;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
-public class Companies extends JavaPlugin {
+public class Companies extends JavaPlugin implements CommandExecutor, Listener {
 	
-	private CompanyListener companyListener;
-	
-	@Override 
-	public List<Class<?>> getDatabaseClasses()
-	{
-		List<Class<?>> classes = new LinkedList<Class<?>>();
-		classes.add(CompanyTable.class);
-		return classes;
-	}
+	public static PlayerTable player;
+	public static long playtime;
 	
 	@Override
-	public void onEnable()
-	{
-		// Configuration
-	    FileConfiguration config = getConfig();
-	    config.options().copyDefaults(true);
-	    saveConfig();
+	public List<Class<?>> getDatabaseClasses() {
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		
-		// Dependencies
-		if((!hasVault())) {
-			getLogger().warning("Vault not found, plugin disabled!");
-			Bukkit.getPluginManager().disablePlugin(this);
-		}
-		
-		// Create listeners
-		companyListener = new CompanyListener(this);
-		
-		// Register listeners
-		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(companyListener, this);
-		
-		// Load commands
-		getCommand("companies").setExecutor(new CompaniesCommandExecutor(this));
-		
-		// Databases
-		try {
-			getDatabase().find(CompanyTable.class).findRowCount();
-			getLogger().info("Database information collected");
-			getLogger().info("Starting Companies...");
-		} catch(PersistenceException error) {
-			getLogger().info("Installing database for " + getDescription().getName() + " due to first time usage");
-			installDDL();
-		}
-		
-		getLogger().info("Plugin started!");
+		classes.add(PlayerTable.class);
+		classes.add(CompanyTable.class);
+	
+		return classes;
 	}
 
 	@Override
-	public void onDisable()
-	{
-		companyListener = null;
+	public void onEnable() {
+		// Configuration
+		FileConfiguration config = getConfig();
+		config.options().copyDefaults(true);
+		saveConfig();
+
+		// Dependencies
+		if ((!hasVault())) {
+			getLogger().warning("Vault not found, plugin disabled!");
+			Bukkit.getPluginManager().disablePlugin(this);
+		} else {
+			getLogger().info("Vault Found!");
+		}
+
+		if ((!hasWorldGuard())) {
+			getLogger().warning("WorldGuard not found, plugin disabled!");
+			Bukkit.getPluginManager().disablePlugin(this);
+		} else {
+			getLogger().info("WorldGuard Found!");
+		}
+
+		if ((!hasWorldEdit())) {
+			getLogger().warning("WorldEdit not found, plugin disabled!");
+			Bukkit.getPluginManager().disablePlugin(this);
+		} else {
+			getLogger().info("WorldEdit Found!");
+		}
+		
+		Bukkit.getServer().getPluginManager().registerEvents(this, this);
+	
+		getLogger().info("Listeners Active!");
+
+		// Load commands
+		getCommand("companies").setExecutor(new CommandCore(this));
+		getLogger().info("Commands Loaded!");
+
+		// Databases
+		try {
+			getDatabase().find(CompanyTable.class).findRowCount();
+
+			getLogger().info("Database Connected");
+			getLogger().info("Starting Companies...");
+		} catch (PersistenceException error) {
+			getLogger().info("Installing database for " + getDescription().getName());
+			installDDL();
+		}
+
+		getLogger().info("Plugin started!");
 	}
 	
-	public static Companies getInstance()
-	{
-		return (Companies)Bukkit.getPluginManager().getPlugin("Companies");
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		
+		// Set the time the player logged in at in milliseconds 
+		Companies.playtime = Calendar.getInstance().getTimeInMillis();
+		
+		String uuid = event.getPlayer().getUniqueId().toString();
+		
+		Query<PlayerTable> query = this.getDatabase().find(PlayerTable.class);
+		query.where().eq("uuid", uuid);
+		
+		PlayerTable existingPlayer = query.findUnique();
+		
+		if(existingPlayer != null) {
+			Companies.player = existingPlayer;
+			return;
+		} 
+		
+		Timestamp currentTime = DatabaseHelper.currentTime();
+		
+		PlayerTable newPlayer = this.getDatabase().createEntityBean(PlayerTable.class);
+	
+		newPlayer.setUniqueId(uuid);
+		newPlayer.setCreatedAt(currentTime);
+		newPlayer.setUpdatedAt(currentTime);
+	
+		this.getDatabase().save(newPlayer);
+		
+		Companies.player = newPlayer;
 	}
 	
-	public boolean hasVault()
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event)
 	{
+		long currentTime = Calendar.getInstance().getTimeInMillis();
+		
+		long difference = currentTime - Companies.playtime;
+		
+		long playtime = difference + Companies.player.getPlaytime(); 
+		
+		Companies.player.setPlaytime(playtime);
+		Companies.player.setUpdatedAt(DatabaseHelper.currentTime());
+		
+		this.getDatabase().update(Companies.player);
+	}
+
+	/**
+	 * Get the plugin instance.
+	 * 
+	 * @return Companies
+	 */
+	public static Companies getInstance() {
+		return (Companies) Bukkit.getPluginManager().getPlugin("Companies");
+	}
+
+	/**
+	 * Check if the server has Vault.
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasVault() {
 		Plugin plugin = getServer().getPluginManager().getPlugin("Vault");
 		if ((plugin == null) || (!(plugin instanceof Vault))) {
 			return false;
 		}
 		return true;
 	}
-	
-	public Economy setupEconomy()
-	{
-		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-		if(economyProvider != null) {
+
+	/**
+	 * Check whether or not WorldGuard is enabled.
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasWorldGuard() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+		if ((plugin == null) || (!(plugin instanceof WorldGuardPlugin))) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Check whether or not WorldEdit is enabled.
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasWorldEdit() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldEdit");
+		if ((plugin == null) || (!(plugin instanceof WorldEditPlugin))) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Use vault to get the current economy being used by the server.
+	 * 
+	 * @return mixed
+	 */
+	public Economy setupEconomy() {
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager()
+				.getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
 			return economyProvider.getProvider();
 		}
 		return null;
+	}
+
+	/**
+	 * Return an instance of world guard.
+	 * 
+	 * @return WorldGuardPlugin
+	 */
+	public WorldGuardPlugin getWorldGuard() {
+		Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
+
+		return (WorldGuardPlugin) plugin;
 	}
 }
